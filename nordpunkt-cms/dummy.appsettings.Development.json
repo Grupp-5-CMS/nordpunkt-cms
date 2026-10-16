@@ -32,5 +32,11 @@
         "Debug": true
       }
     }
+  },
+  "uSync": {
+    "Settings": {
+      "ExportAtStartup": "all",
+      "ExportOnSave": true
+    }
   }
 }
