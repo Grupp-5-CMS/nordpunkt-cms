@@ -29,7 +29,7 @@
         "Mode": "Production"
       },
       "ModelsBuilder": {
-        "ModelsMode": "Nothing"
+        "ModelsMode": "SourceCodeAuto"
       },
       "Security": {
         "AllowConcurrentLogins": false

@@ -1,0 +1,36 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+	Layout = null;
+
+	var pageTitle = Model.Name;
+
+	var fullTitle = !string.IsNullOrEmpty(pageTitle) ? $"Nordpunkt | {pageTitle}" : "Nordpunkt";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@fullTitle</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="~/css/style.css" rel="stylesheet" />
+
+
+</head>
+<body>
+
+	<partial name="/Views/Partials/_Header.cshtml" />
+
+	<main>
+
+	@RenderBody()
+
+	</main>
+
+
+	<partial name="/Views/Partials/_Footer.cshtml" />
+
+</body>
+</html>	
