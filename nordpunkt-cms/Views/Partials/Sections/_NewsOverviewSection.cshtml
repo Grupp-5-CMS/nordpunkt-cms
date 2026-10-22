@@ -1,14 +1,72 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.HomePage>
-@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using Umbraco.Cms.Web.Common.PublishedModels
+@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<HomePage>
 
+@{
+    // Hämtar mappen Nyhetsartiklar under Home
+    var newsFolder = Model.Children<NewsFolder>().FirstOrDefault();
 
+    // Hämtar de 5 senaste artiklarna från mappen
+    var articles = newsFolder?.Children<NewsArticlePage>()
+        .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
+        .Take(5)
+        ?? Enumerable.Empty<NewsArticlePage>();
+}
 
-<section>
-    <div class="container mx-auto px-4 relative z-10">
-        <div class="w-5/12 flex flex-col gap-8">
-            <h1 class="text-[4.5rem] text-[#4F5955] font-bold leading-none">@Model.OverviewTitle</h1>
-            <p>Test text from overview section</p>
-        </div>
-    </div>
+<section class="container mx-auto px-4 py-12 max-w-6xl">
+
+    @* Lilla texten ovanför rubriken *@
+    <p class="text-xs uppercase tracking-wide text-[#97533F] mb-4">
+        Nyheter &amp; perspektiv
+    </p>
+
+    @* Huvudrubriken från Umbraco *@
+    <h1 class="font-serif text-5xl text-[#222320] mb-10">
+        @Model.OverviewTitle
+    </h1>
+
+    @* Visar en kort förhandsvisning av de 5 senaste artiklarna *@
+    @foreach (var article in articles)
+    {
+        <article class="border-t border-[#D6D6CF] py-8 md:flex gap-8">
+
+            @* Klickbar artikelbild *@
+            @if (article.ArticleImage != null)
+            {
+                <a href="@article.Url()" class="md:w-1/3">
+                    <img src="@article.ArticleImage.Url()"
+                         alt="@article.ArticleImage.Name"
+                         class="w-full h-auto object-cover" />
+                </a>
+            }
+
+            <div class="flex-1">
+
+                @* Publiceringsdatum *@
+                @if (article.PublishDate.HasValue)
+                {
+                    <p class="text-xs text-[#74756E] mb-2">
+                        @article.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
+                    </p>
+                }
+
+                @* Artikelns rubrik *@
+                <h2 class="font-serif text-3xl text-[#222320] mb-3">
+                    @article.ArticleTitle
+                </h2>
+
+                @* Artikelns ingress, inte hela artikeltexten *@
+                <p class="text-sm text-[#74756E] mb-4">
+                    @article.Intro
+                </p>
+
+                @* Länk till hela artikelsidan *@
+                <a href="@article.Url()" class="text-sm text-[#97533F]">
+                    Läs hela artikeln →
+                </a>
+
+            </div>
+        </article>
+    }
+
 </section>

@@ -1,9 +1,25 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using Umbraco.Cms.Web.Common.PublishedModels
+@using Umbraco.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
-@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 
-
+@{
+    // hämtar startsidan och letar upp Site Settings
+    var home = Model.Root();
+    var settings = home?.Children<SiteSettings>().FirstOrDefault();
+}
 
 <footer>
-	© 2026 Nordpunkt Footer
+    @if (settings != null)
+    {
+        @* visar kontaktmailen från Site Settings *@
+        <p>
+            Kontakta oss:
+            <a href="mailto:@settings.ContactEmail">
+                @settings.ContactEmail
+            </a>
+        </p>
+
+        @* visar sidfotstexten från Site Settings *@
+        <p>@settings.FooterText</p>
+    }
 </footer>

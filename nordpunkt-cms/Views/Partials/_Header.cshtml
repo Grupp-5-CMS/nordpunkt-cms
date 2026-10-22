@@ -1,14 +1,38 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿
+@using Umbraco.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
-@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 
+@{
+    // Hämtar startsidans adress
+    var home = Model.Root();
+    var homeUrl = home?.Url() ?? "/";
 
+    // Hämtar Nyheter-sidan under Home
+    var newsPage = home?.Children()
+        .FirstOrDefault(x => x.ContentType.Alias == "newsOverviewPage");
+
+    // Hämtar Tipsa redaktionen-sidan under Home
+    var tipPage = home?.Children()
+        .FirstOrDefault(x => x.ContentType.Alias == "tipPage");
+}
 
 <header>
-	<h1>Nordpunkt header</h1>
-	<nav>
-		<a href="#home">Hem</a>
-		<a href="#overview">Nyheter</a>
-		<a href="#categories">Kategorier</a>
-	</nav>
+    <nav class="flex items-center gap-8">
+
+        @* Klickbar logotyp som leder till startsidan *@
+        <a href="@homeUrl">Nordpunkt</a>
+
+        @* Länk till sidan med alla nyheter *@
+        @if (newsPage != null)
+        {
+            <a href="@newsPage.Url()">Nyheter</a>
+        }
+
+        @* Länk till sidan för nyhetstips *@
+        @if (tipPage != null)
+        {
+            <a href="@tipPage.Url()">Tipsa redaktionen</a>
+        }
+
+    </nav>
 </header>
