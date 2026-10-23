@@ -1,0 +1,77 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels
+@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<NewsOverviewPage>
+
+@{
+    // Använder Nordpunkts gemensamma layout
+    Layout = "mainLayout.cshtml";
+
+    // Hämtar startsidan
+    var home = Model.Root();
+
+    // Hämtar mappen Nyhetsartiklar under Home
+    var newsFolder = home.Children<NewsFolder>().FirstOrDefault();
+
+    // Hämtar ALLA publicerade artiklar, med de senaste först
+    var articles = newsFolder?.Children<NewsArticlePage>()
+        .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
+        ?? Enumerable.Empty<NewsArticlePage>();
+}
+
+<section class="container mx-auto px-4 py-12 max-w-6xl">
+
+    @* Lilla texten ovanför rubriken *@
+    <p class="text-xs uppercase tracking-wide text-[#97533F] mb-4">
+        Nyheter &amp; perspektiv
+    </p>
+
+    @* Sidans huvudrubrik *@
+    <h1 class="font-serif text-5xl text-[#222320] mb-10">
+        Alla nyheter
+    </h1>
+
+    @* Visar samtliga publicerade artiklar *@
+    @foreach (var article in articles)
+    {
+        <article class="border-t border-[#D6D6CF] py-8 md:flex gap-8">
+
+            @* Klickbar artikelbild *@
+            @if (article.ArticleImage != null)
+            {
+                <a href="@article.Url()" class="md:w-1/3">
+                    <img src="@article.ArticleImage.Url()"
+                         alt="@article.ArticleImage.Name"
+                         class="w-full h-auto object-cover" />
+                </a>
+            }
+
+            <div class="flex-1">
+
+                @* Artikelns publiceringsdatum *@
+                @if (article.PublishDate.HasValue)
+                {
+                    <p class="text-xs text-[#74756E] mb-2">
+                        @article.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
+                    </p>
+                }
+
+                @* Artikelns rubrik *@
+                <h2 class="font-serif text-3xl text-[#222320] mb-3">
+                    @article.ArticleTitle
+                </h2>
+
+                @* Artikelns ingress *@
+                <p class="text-sm text-[#74756E] mb-4">
+                    @article.Intro
+                </p>
+
+                @* Länk till hela artikeln *@
+                <a href="@article.Url()" class="text-sm text-[#97533F]">
+                    Läs hela artikeln →
+                </a>
+
+            </div>
+        </article>
+    }
+
+</section>

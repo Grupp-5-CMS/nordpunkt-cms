@@ -1,19 +1,11 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿
+@using Umbraco.Cms.Web.Common.PublishedModels
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.HomePage>
-@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels
+
 @{
-	Layout = "/Views/mainLayout.cshtml";
+    Layout = "/Views/mainLayout.cshtml";
 }
 
-
-
-<div class="container mx-auto px-4 relative z-10">
-	<div class="w-5/12 flex flex-col gap-8">
-
-		<h1 class="text-[4.5rem] text-[#4F5955] font-bold leading-none">@Model.HomeTitle</h1>
-		
-	</div>
-</div>
-
+@* Visar nyhetssektionen på startsidan *@
 <partial name="Partials/Sections/_NewsOverviewSection" />
-

@@ -1,5 +1,73 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+﻿
+@using Umbraco.Cms.Web.Common.PublishedModels
+@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<NewsArticlePage>
+
 @{
-	Layout = "mainLayout.cshtml";
+    Layout = "mainLayout.cshtml";
 }
+
+<article class="mx-auto max-w-6xl px-6 py-12">
+
+    @* Länk tillbaka till nyheterna *@
+    <a href="@Model.Root().Url()" class="text-sm text-[#97533F]">
+        ← Tillbaka till senaste nyheterna
+    </a>
+
+    <header class="mt-10 mb-8">
+
+        @* Datum och rubrik *@
+        @if (Model.PublishDate.HasValue)
+        {
+            <p class="text-xs text-[#74756E] mb-3">
+                @Model.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
+            </p>
+        }
+
+        <h1 class="font-serif text-5xl md:text-7xl font-normal leading-tight text-[#222320] max-w-4xl">
+            @Model.ArticleTitle
+        </h1>
+
+    </header>
+
+    @* Artikelbild och bildtext *@
+    @if (Model.ArticleImage != null)
+    {
+        <figure class="mb-12">
+            <img src="@Model.ArticleImage.Url()"
+                 alt="@Model.ArticleImage.Name"
+                 class="w-full h-auto object-cover" />
+
+            @if (!string.IsNullOrWhiteSpace(Model.ImageCaption))
+            {
+                <figcaption class="text-xs text-[#74756E] mt-2">
+                    @Model.ImageCaption
+                </figcaption>
+            }
+        </figure>
+    }
+
+    <div class="max-w-2xl mx-auto">
+
+        @* Ingress *@
+        <p class="font-serif text-2xl leading-relaxed text-[#222320] mb-10">
+            @Model.Intro
+        </p>
+
+        <hr class="border-[#D6D6CF] mb-8" />
+
+        @* Artikeltext *@
+        <div class="font-serif text-lg leading-loose text-[#222320] space-y-6">
+            @Model.ArticleBody
+        </div>
+
+        <hr class="border-[#D6D6CF] mt-12 mb-6" />
+
+        @* Tillbaka till nyhetsöversikten *@
+        <a href="@Model.Root().Url()" class="text-sm text-[#97533F]">
+            ← Alla nyheter
+        </a>
+
+    </div>
+
+</article>

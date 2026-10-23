@@ -1,18 +1,42 @@
-﻿
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-/*Exempelfärger, ändra sedan efter design.*/
+/* Hämtar typsnitten från Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Rubik:wght@400;500;600;700&display=swap');
 
+/* Gemensamma färger och typsnitt från Figma */
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2ecc71;
-    --text-color: #333;
-    --background-color: #f5f5f5;
+    --primary-color: #97533F;
+    --secondary-color: #74756E;
+    --text-color: #222320;
+    --background-color: #FAF9F6;
+    --border-color: #D6D6CF;
+
+    --font-body: 'Nunito', sans-serif;
+    --font-heading: 'Rubik', sans-serif;
 }
 
+/* Grundinställningar för hela webbplatsen */
 body {
-    background-color: antiquewhite;
-    font-family: 'Poppins' sans-serif;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-body);
 }
+
+/* Samma rubriktypsnitt på alla sidor */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+}
+
+/* Länkar använder accentfärgen */
+a {
+    color: var(--primary-color);
+}
+
+/* Tydlig markering när man använder tangentbordet */
+a:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 3px;
+}
+
 
 
