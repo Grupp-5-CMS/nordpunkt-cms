@@ -4,6 +4,13 @@
 
 @{
     Layout = "mainLayout.cshtml";
+
+    // Hämtar startsidan
+    var home = Model.Root();
+
+    // Hämtar Nyheter-sidan under Home
+    var newsPage = home?.Children()
+        .FirstOrDefault(x => x.ContentType.Alias == "newsOverviewPage");
 }
 
 <article class="mx-auto max-w-6xl px-6 py-12">
@@ -15,13 +22,34 @@
 
     <header class="mt-10 mb-8">
 
-        @* Datum och rubrik *@
-        @if (Model.PublishDate.HasValue)
-        {
-            <p class="text-xs text-[#74756E] mb-3">
-                @Model.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
-            </p>
-        }
+        <div class="flex">
+
+            @* Artikel kategori *@
+            @if (!string.IsNullOrWhiteSpace(Model.ArticleCategory))
+            {
+                if (newsPage != null)
+                {
+                    <a href="@newsPage.Url()?category=@Uri.EscapeDataString(Model.ArticleCategory)" class="text-sm text-[#97533F] mb-2 hover:underline">
+                        @Model.ArticleCategory
+                    </a>
+                }
+                else
+                {
+                    <p class="text-sm text-[#97533F] mb-2">
+                        @Model.ArticleCategory
+                    </p>
+                }
+            }
+
+            @* Datum och rubrik *@
+            @if (Model.PublishDate.HasValue)
+            {
+                <p class="text-xs text-[#74756E] mb-3">
+                    @Model.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
+                </p>
+            }
+
+        </div>
 
         <h1 class="font-serif text-5xl md:text-7xl font-normal leading-tight text-[#222320] max-w-4xl">
             @Model.ArticleTitle
