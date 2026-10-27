@@ -1,5 +1,6 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels
 @using Umbraco.Extensions
+@using System
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<NewsOverviewPage>
 
 @{
@@ -12,8 +13,13 @@
     // Hämtar mappen Nyhetsartiklar under Home
     var newsFolder = home.Children<NewsFolder>().FirstOrDefault();
 
-    // Hämtar ALLA publicerade artiklar, med de senaste först
+    // Hämtar kategori-filter från query string
+    var categoryFilter = Context.Request.Query["category"].ToString();
+
+    // Hämtar artiklar, filtrerar på kategori om angiven och sorterar med senaste först
     var articles = newsFolder?.Children<NewsArticlePage>()
+        .Where(x => string.IsNullOrWhiteSpace(categoryFilter) ||
+                    string.Equals(x.ArticleCategory, categoryFilter, StringComparison.OrdinalIgnoreCase))
         .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
         ?? Enumerable.Empty<NewsArticlePage>();
 }
@@ -27,8 +33,19 @@
 
     @* Sidans huvudrubrik *@
     <h1 class="font-serif text-5xl text-[#222320] mb-10">
-        Alla nyheter
+        @(string.IsNullOrWhiteSpace(categoryFilter) ? "Alla nyheter" : $"Nyheter: {categoryFilter}")
     </h1>
+
+    @if (!string.IsNullOrWhiteSpace(categoryFilter))
+    {
+        <p class="text-sm text-[#74756E] mb-10">
+            <a href="@Model.Url()" class="underline ml-2 hover:text-[#97533F]">Visa alla nyheter</a>
+        </p>
+    }
+    else
+    {
+        <div class="mb-10"></div>
+    }
 
     @* Visar samtliga publicerade artiklar *@
     @foreach (var article in articles)
