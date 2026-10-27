@@ -1,0 +1,36 @@
+﻿@import "tailwindcss";
+@source "../../Views";
+
+@theme {
+    --color-primary: #97533F;
+    --color-secondary: #74756E;
+    --color-text: #222320;
+    --color-background: #FAF9F6;
+    --color-border: #D6D6CF;
+    --font-body: 'Nunito', sans-serif;
+    --font-heading: 'Rubik', sans-serif;
+}
+
+/* Grundinställningar för hela webbplatsen */
+body {
+    margin: 0;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-body);
+}
+
+/* Samma rubriktypsnitt på alla sidor */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+}
+
+/* Länkar använder accentfärgen */
+a {
+    color: var(--color-primary);
+}
+
+/* Tydlig markering när man använder tangentbordet */
+a:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
