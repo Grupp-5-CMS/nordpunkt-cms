@@ -11,6 +11,9 @@
         .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
         .Take(5)
         ?? Enumerable.Empty<NewsArticlePage>();
+
+    // Hämtar Nyheter-sidan så att kategorin kan länka till filtrerad lista
+    var newsPage = Model.Children<NewsOverviewPage>().FirstOrDefault();
 }
 
 <section class="container mx-auto px-4 py-12 max-w-6xl">
@@ -42,13 +45,38 @@
 
             <div class="flex-1">
 
-                @* Publiceringsdatum *@
-                @if (article.PublishDate.HasValue)
-                {
-                    <p class="text-xs text-[#74756E] mb-2">
-                        @article.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
-                    </p>
-                }
+                @* Kategori och publiceringsdatum på samma rad *@
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+
+                    @* Artikelns kategori, länkar till filtrerad nyhetssida *@
+                    @if (!string.IsNullOrWhiteSpace(article.ArticleCategory))
+                    {
+                        if (newsPage != null)
+                        {
+                            <a href="@newsPage.Url()?category=@Uri.EscapeDataString(article.ArticleCategory)"
+                               class="text-sm font-semibold text-[#97533F] no-underline hover:underline">
+                                @article.ArticleCategory
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-sm font-semibold text-[#97533F]">@article.ArticleCategory</span>
+                        }
+                    }
+
+                    @* Publiceringsdatum, med tunt streck före om kategori finns *@
+                    @if (article.PublishDate.HasValue)
+                    {
+                        if (!string.IsNullOrWhiteSpace(article.ArticleCategory))
+                        {
+                            <span class="h-3 w-px bg-[#D6D6CF]" aria-hidden="true"></span>
+                        }
+                        <time datetime="@article.PublishDate.Value.ToString("yyyy-MM-dd")" class="text-xs text-[#74756E]">
+                            @article.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
+                        </time>
+                    }
+
+                </div>
 
                 @* Artikelns rubrik *@
                 <h2 class="font-serif text-3xl text-[#222320] mb-3">

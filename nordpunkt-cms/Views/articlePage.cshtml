@@ -4,24 +4,59 @@
 
 @{
     Layout = "mainLayout.cshtml";
+
+    // Hämtar startsidan
+    var home = Model.Root();
+
+    // Hämtar Nyheter-sidan under Home
+    var newsPage = home?.Children()
+        .FirstOrDefault(x => x.ContentType.Alias == "newsOverviewPage");
+
+    // Länk till nyhetsöversikten, med startsidan som reserv
+    var newsUrl = newsPage?.Url() ?? home?.Url() ?? "/";
 }
 
 <article class="mx-auto max-w-6xl px-6 py-12">
 
     @* Länk tillbaka till nyheterna *@
-    <a href="@Model.Root().Url()" class="text-sm text-[#97533F]">
+    <a href="@newsUrl" class="text-sm text-[#97533F]">
         ← Tillbaka till senaste nyheterna
     </a>
 
     <header class="mt-10 mb-8">
 
-        @* Datum och rubrik *@
-        @if (Model.PublishDate.HasValue)
-        {
-            <p class="text-xs text-[#74756E] mb-3">
-                @Model.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
-            </p>
-        }
+        @* Kategori och datum: större text och mer luft än i listorna *@
+        <div class="flex flex-wrap items-center gap-5 mb-8">
+
+            @* Artikelns kategori, länkar till filtrerad nyhetssida *@
+            @if (!string.IsNullOrWhiteSpace(Model.ArticleCategory))
+            {
+                if (newsPage != null)
+                {
+                    <a href="@newsPage.Url()?category=@Uri.EscapeDataString(Model.ArticleCategory)"
+                       class="text-base font-medium uppercase tracking-[0.12em] [font-family:var(--font-heading)] text-[#97533F] no-underline hover:underline underline-offset-4">
+                        @Model.ArticleCategory
+                    </a>
+                }
+                else
+                {
+                    <span class="text-base font-medium uppercase tracking-[0.12em] [font-family:var(--font-heading)] text-[#97533F]">@Model.ArticleCategory</span>
+                }
+            }
+
+            @* Publiceringsdatum, med tunt streck före om kategori finns *@
+            @if (Model.PublishDate.HasValue)
+            {
+                if (!string.IsNullOrWhiteSpace(Model.ArticleCategory))
+                {
+                    <span class="h-5 w-px bg-[#D6D6CF]" aria-hidden="true"></span>
+                }
+                <time datetime="@Model.PublishDate.Value.ToString("yyyy-MM-dd")" class="text-base text-[#74756E]">
+                    @Model.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
+                </time>
+            }
+
+        </div>
 
         <h1 class="font-serif text-5xl md:text-7xl font-normal leading-tight text-[#222320] max-w-4xl">
             @Model.ArticleTitle
@@ -63,7 +98,9 @@
         <hr class="border-[#D6D6CF] mt-12 mb-6" />
 
         @* Tillbaka till nyhetsöversikten *@
-        <a href="@Model.Root().Url()" class="text-sm text-[#97533F]">
+        <a href="@newsUrl" 
+        
+        class="text-sm text-[#97533F]">
             ← Alla nyheter
         </a>
 

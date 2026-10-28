@@ -1,5 +1,7 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels
 @using Umbraco.Extensions
+@using System
+@using System.Linq
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<NewsOverviewPage>
 
 @{
@@ -12,10 +14,24 @@
     // Hämtar mappen Nyhetsartiklar under Home
     var newsFolder = home.Children<NewsFolder>().FirstOrDefault();
 
-    // Hämtar ALLA publicerade artiklar, med de senaste först
-    var articles = newsFolder?.Children<NewsArticlePage>()
+    // Hämtar kategori-filter från query string
+    var categoryFilter = Context.Request.Query["category"].ToString();
+
+    // Hämtar alla artiklar för att bygga kategorilista
+    var allArticles = newsFolder?.Children<NewsArticlePage>() ?? Enumerable.Empty<NewsArticlePage>();
+    var categories = allArticles
+        .Where(x => !string.IsNullOrWhiteSpace(x.ArticleCategory))
+        .Select(x => x.ArticleCategory.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(x => x)
+        .ToList();
+
+    // Hämtar artiklar, filtrerar på kategori om angiven och sorterar med senaste först
+    var articles = allArticles
+        .Where(x => string.IsNullOrWhiteSpace(categoryFilter) ||
+                    string.Equals(x.ArticleCategory, categoryFilter, StringComparison.OrdinalIgnoreCase))
         .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
-        ?? Enumerable.Empty<NewsArticlePage>();
+        .ToList();
 }
 
 <section class="mx-auto w-full max-w-6xl px-6 py-12">
@@ -26,9 +42,52 @@
     </p>
 
     @* Sidans huvudrubrik *@
-    <h1 class="font-serif text-5xl text-[#222320] mb-10">
-        Alla nyheter
+    <h1 class="font-serif text-5xl text-[#222320] mb-6">
+        @(string.IsNullOrWhiteSpace(categoryFilter) ? "Alla nyheter" : $"Nyheter: {categoryFilter}")
     </h1>
+
+    @* Kategorifilter *@
+    @* Vanligt GET-formulär: fungerar även utan JavaScript, onchange skickar direkt *@
+    <form method="get" action="@Model.Url()" class="flex flex-wrap items-center gap-x-4 gap-y-3 mb-10">
+        <label for="categoryFilter"
+               class="text-xs font-medium uppercase tracking-[0.08em] [font-family:var(--font-heading)] text-[#74756E]">
+            Kategori
+        </label>
+        <div class="relative">
+            <select id="categoryFilter" name="category"
+                    class="appearance-none min-w-[13rem] cursor-pointer border border-[#D6D6CF] bg-[#FAF9F6] py-2.5 pl-4 pr-10 text-sm font-semibold text-[#222320] transition-colors hover:border-[#74756E] focus:outline-none focus-visible:border-[#97533F] focus-visible:ring-2 focus-visible:ring-[#97533F]"
+                    onchange="if (this.value) { this.form.submit(); } else { window.location.href = this.form.action; }">
+                <option value="" selected="@string.IsNullOrWhiteSpace(categoryFilter)">Alla kategorier</option>
+                @foreach (var cat in categories)
+                {
+                    <option value="@cat" selected="@string.Equals(categoryFilter, cat, StringComparison.OrdinalIgnoreCase)">@cat</option>
+                }
+            </select>
+
+            @* Egen pil istället för webbläsarens standardpil *@
+            <svg class="pointer-events-none absolute right-3.5 top-1/2 h-3 w-3 -translate-y-1/2 text-[#97533F]"
+                 viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2 4.5 6 8.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <noscript>
+            <button type="submit" class="bg-[#97533F] px-4 py-2.5 text-sm font-semibold text-[#FAF9F6]">Filtrera</button>
+        </noscript>
+        @if (!string.IsNullOrWhiteSpace(categoryFilter))
+        {
+            <a href="@Model.Url()"
+               class="border-b border-current text-sm font-semibold text-[#97533F] no-underline hover:border-transparent">
+                Rensa filter ×
+            </a>
+        }
+    </form>
+
+    @if (!articles.Any())
+    {
+        <p class="border-t border-[#D6D6CF] py-8 text-sm text-[#74756E]">
+            Inga artiklar hittades i kategorin “@categoryFilter”.
+        </p>
+    }
 
     @* Visar samtliga publicerade artiklar *@
 
@@ -57,13 +116,31 @@
 
             <div class="flex-1">
 
-                @* Artikelns publiceringsdatum *@
-                @if (article.PublishDate.HasValue)
-                {
-                    <p class="text-xs text-[#74756E] mb-2">
-                        @article.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
-                    </p>
-                }
+                @* Kategori och publiceringsdatum på samma rad *@
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+
+                    @* Artikelns kategori, klickbar för att filtrera *@
+                    @if (!string.IsNullOrWhiteSpace(article.ArticleCategory))
+                    {
+                        <a href="@Model.Url()?category=@Uri.EscapeDataString(article.ArticleCategory)"
+                           class="text-sm font-semibold text-[#97533F] no-underline hover:underline">
+                            @article.ArticleCategory
+                        </a>
+                    }
+
+                    @* Publiceringsdatum, med tunt streck före om kategori finns *@
+                    @if (article.PublishDate.HasValue)
+                    {
+                        if (!string.IsNullOrWhiteSpace(article.ArticleCategory))
+                        {
+                            <span class="h-3 w-px bg-[#D6D6CF]" aria-hidden="true"></span>
+                        }
+                        <time datetime="@article.PublishDate.Value.ToString("yyyy-MM-dd")" class="text-xs text-[#74756E]">
+                            @article.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
+                        </time>
+                    }
+
+                </div>
 
                 @* Artikelns rubrik *@
                 <h2 class="font-serif text-3xl text-[#222320] mb-3">
