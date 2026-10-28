@@ -1,0 +1,50 @@
+﻿@using nordpunkt_cms.ViewModels
+@using Umbraco.Cms.Web.Common
+@model NewsTipFormViewModel
+
+@using (Html.BeginUmbracoForm("Submit", "NewsTipForm", FormMethod.Post))
+{
+    <div class="news-tip-form">
+
+        <div>
+            <label asp-for="TipHeadline">Rubrik på nyhetstipset *</label>
+            <input asp-for="TipHeadline" />
+            <span asp-validation-for="TipHeadline"></span>
+        </div>
+
+        <div>
+            <label asp-for="TipBody">Beskrivning *</label>
+            <textarea asp-for="TipBody" rows="5"></textarea>
+            <span asp-validation-for="TipBody"></span>
+        </div>
+
+        <div>
+            <label asp-for="SenderName">Namn (frivilligt)</label>
+            <input asp-for="SenderName" />
+            <span asp-validation-for="SenderName"></span>
+        </div>
+
+        <div>
+            <label asp-for="SenderEmail">E-post (frivilligt)</label>
+            <input asp-for="SenderEmail" type="email" />
+            <span asp-validation-for="SenderEmail"></span>
+        </div>
+
+        <div>
+            <label asp-for="SenderPhone">Telefonnummer (frivilligt)</label>
+            <input asp-for="SenderPhone" type="tel" />
+            <span asp-validation-for="SenderPhone"></span>
+        </div>
+
+        <div>
+            <input asp-for="PrivacyConsent" type="checkbox" />
+            <label asp-for="PrivacyConsent">
+                Jag godkänner informationen om hur personuppgifter behandlas *
+            </label>
+            <span asp-validation-for="PrivacyConsent"></span>
+        </div>
+
+        <button type="submit">Skicka nyhetstips</button>
+
+    </div>
+}

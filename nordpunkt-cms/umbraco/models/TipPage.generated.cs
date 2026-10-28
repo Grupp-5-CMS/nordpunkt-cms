@@ -50,27 +50,19 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		// properties
 
 		///<summary>
-		/// Introduktion
+		/// Tip Description
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.2.1+e573de0")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("intro")]
-		public virtual string Intro => this.Value<string>(_publishedValueFallback, "intro");
+		[ImplementPropertyType("tipDescription")]
+		public virtual string TipDescription => this.Value<string>(_publishedValueFallback, "tipDescription");
 
 		///<summary>
-		/// Sidrubrik
+		/// Tip Title
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.2.1+e573de0")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("pageTitle")]
-		public virtual string PageTitle => this.Value<string>(_publishedValueFallback, "pageTitle");
-
-		///<summary>
-		/// Personuppgiftsinformation
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.2.1+e573de0")]
-		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("privacyInformation")]
-		public virtual global::Umbraco.Cms.Core.Strings.IHtmlEncodedString PrivacyInformation => this.Value<global::Umbraco.Cms.Core.Strings.IHtmlEncodedString>(_publishedValueFallback, "privacyInformation");
+		[ImplementPropertyType("tipTitle")]
+		public virtual string TipTitle => this.Value<string>(_publishedValueFallback, "tipTitle");
 	}
 }
