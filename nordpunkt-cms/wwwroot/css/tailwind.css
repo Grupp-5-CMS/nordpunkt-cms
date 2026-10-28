@@ -270,6 +270,9 @@
   .mb-12 {
     margin-bottom: calc(var(--spacing) * 12);
   }
+  .ml-auto {
+    margin-left: auto;
+  }
   .block {
     display: block;
   }
@@ -278,6 +281,9 @@
   }
   .hidden {
     display: none;
+  }
+  .inline-flex {
+    display: inline-flex;
   }
   .h-3 {
     height: calc(var(--spacing) * 3);
@@ -381,6 +387,10 @@
   .border-b-2 {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
+  }
+  .border-l {
+    border-left-style: var(--tw-border-style);
+    border-left-width: 1px;
   }
   .border-\[\#97533F\] {
     border-color: #97533F;
@@ -580,6 +590,9 @@
     }
     .hover\:border-transparent:hover {
       border-color: transparent;
+    }
+    .hover\:bg-\[\#D6D6CF\]\/40:hover {
+      background-color: color-mix(in oklab, #D6D6CF 40%, transparent);
     }
     .hover\:text-\[\#97533F\]:hover {
       color: #97533F;
