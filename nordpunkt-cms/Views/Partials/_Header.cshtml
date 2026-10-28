@@ -1,38 +1,88 @@
-﻿
-@using Umbraco.Extensions
+﻿@using Umbraco.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 
 @{
-    // Hämtar startsidans adress
+    // Hämta startsidan
     var home = Model.Root();
     var homeUrl = home?.Url() ?? "/";
 
-    // Hämtar Nyheter-sidan under Home
+    // Hämta Nyheter
     var newsPage = home?.Children()
         .FirstOrDefault(x => x.ContentType.Alias == "newsOverviewPage");
 
-    // Hämtar Tipsa redaktionen-sidan under Home
+    // Hämta Tipsa redaktionen
     var tipPage = home?.Children()
         .FirstOrDefault(x => x.ContentType.Alias == "tipPage");
+
+    // Kontrollera aktiv sida
+    var isHome = Model.Id == home?.Id;
+
+    var isNews = newsPage != null &&
+        (Model.Id == newsPage.Id ||
+         Model.Ancestors().Any(x => x.Id == newsPage.Id) ||
+         Model.ContentType.Alias == "newsArticlePage");
+
+    var isTip = tipPage != null &&
+        (Model.Id == tipPage.Id ||
+         Model.Ancestors().Any(x => x.Id == tipPage.Id));
 }
 
-<header>
-    <nav class="flex items-center gap-8">
+<header class="bg-white">
+    <nav class="mx-auto flex w-full max-w-6xl items-center justify-between border-b border-[#D6D6CF] px-4 py-6"
+         aria-label="Huvudnavigation">
 
-        @* Klickbar logotyp som leder till startsidan *@
-        <a href="@homeUrl">Nordpunkt</a>
+        @* Logotyp *@
+        <a href="@homeUrl" class="flex flex-col gap-0.5 no-underline">
 
-        @* Länk till sidan med alla nyheter *@
-        @if (newsPage != null)
-        {
-            <a href="@newsPage.Url()">Nyheter</a>
-        }
+            <span class="font-sans text-2xl font-bold tracking-tight text-[#222320]">
+                NORDPUNKT<span class="text-[#97533F]">·</span>
+            </span>
 
-        @* Länk till sidan för nyhetstips *@
-        @if (tipPage != null)
-        {
-            <a href="@tipPage.Url()">Tipsa redaktionen</a>
-        }
+            <span class="text-[9px] uppercase tracking-[0.15em] text-[#74756E]">
+                NYHETSBYRÅ
+            </span>
+
+        </a>
+
+        @* Navigation *@
+        <div class="flex items-center gap-8 text-sm">
+            <a href="@homeUrl"
+               class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isHome ? "border-[#97533F] font-semibold" : "border-transparent")" aria-current="@(isHome ? "page" : null)">
+                Hem
+            </a>
+
+            @if (newsPage != null)
+            {
+                <a href="@newsPage.Url()"
+                   class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isNews ? "border-[#97533F] font-semibold" : "border-transparent")" aria-current="@(isNews ? "page" : null)">
+                    Nyheter
+                </a>
+            }
+
+            @if (tipPage != null)
+            {
+                <a href="@tipPage.Url()"
+                   class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isTip ? "border-[#97533F] font-semibold" : "border-transparent")" aria-current="@(isTip ? "page" : null)">
+                    Tipsa redaktionen
+                </a>
+            }
+
+            @* Sökikon - kopplas till sökfunktion senare *@
+            @* <span class="text-[#222320]" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="18" height="18"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+            </span> *@
+
+        </div>
 
     </nav>
 </header>
