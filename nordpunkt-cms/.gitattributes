@@ -1,3 +1,2 @@
-
-# Normalize common web/C# files to CRLF on Windows checkouts
+# Normalize common web/C# files LF to keep git from listing them as changed 
 *.cs text eol=lf

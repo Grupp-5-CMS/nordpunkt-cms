@@ -34,7 +34,7 @@
         .ToList();
 }
 
-<section class="container mx-auto px-4 py-12 max-w-6xl">
+<section class="mx-auto w-full max-w-6xl px-6 py-12">
 
     @* Lilla texten ovanför rubriken *@
     <p class="text-xs uppercase tracking-wide text-[#97533F] mb-4">
@@ -90,6 +90,16 @@
     }
 
     @* Visar samtliga publicerade artiklar *@
+
+    @if (!articles.Any())
+    {
+        <div class="rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-yellow-800">
+            Inga publicerade artiklar hittades.
+
+            <p>NewsFolder hittades: @(newsFolder != null ? "Ja" : "Nej")</p>
+        </div>
+    }
+
     @foreach (var article in articles)
     {
         <article class="border-t border-[#D6D6CF] py-8 md:flex gap-8">
