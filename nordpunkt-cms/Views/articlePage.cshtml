@@ -11,12 +11,15 @@
     // Hämtar Nyheter-sidan under Home
     var newsPage = home?.Children()
         .FirstOrDefault(x => x.ContentType.Alias == "newsOverviewPage");
+
+    // Länk till nyhetsöversikten, med startsidan som reserv
+    var newsUrl = newsPage?.Url() ?? home?.Url() ?? "/";
 }
 
 <article class="mx-auto max-w-6xl px-6 py-12">
 
     @* Länk tillbaka till nyheterna *@
-    <a href="@Model.Root().Url()" class="text-sm text-[#97533F]">
+    <a href="@newsUrl" class="text-sm text-[#97533F]">
         ← Tillbaka till senaste nyheterna
     </a>
 
@@ -91,7 +94,9 @@
         <hr class="border-[#D6D6CF] mt-12 mb-6" />
 
         @* Tillbaka till nyhetsöversikten *@
-        <a href="@Model.Root().Url()" class="text-sm text-[#97533F]">
+        <a href="@newsUrl" 
+        
+        class="text-sm text-[#97533F]">
             ← Alla nyheter
         </a>
 
