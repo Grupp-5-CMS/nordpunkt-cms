@@ -31,7 +31,7 @@
     <nav class="mx-auto flex w-full max-w-6xl items-center justify-between border-b border-[#D6D6CF] px-4 py-6"
          aria-label="Huvudnavigation">
 
-        @* Logotyp *@
+        @* Logotyp - samma som tidigare *@
         <a href="@homeUrl" class="flex flex-col gap-0.5 no-underline">
 
             <span class="font-sans text-2xl font-bold tracking-tight text-[#222320]">
@@ -44,17 +44,20 @@
 
         </a>
 
-        @* Navigation *@
-        <div class="flex items-center gap-8 text-sm">
+        @* Navigation för dator - dold på mobil *@
+        <div class="hidden items-center gap-8 text-sm md:flex">
+
             <a href="@homeUrl"
-               class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isHome ? "border-[#97533F] font-semibold" : "border-transparent")" aria-current="@(isHome ? "page" : null)">
+               class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isHome ? "border-[#97533F] font-semibold" : "border-transparent")"
+               aria-current="@(isHome ? "page" : null)">
                 Hem
             </a>
 
             @if (newsPage != null)
             {
                 <a href="@newsPage.Url()"
-                   class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isNews ? "border-[#97533F] font-semibold" : "border-transparent")" aria-current="@(isNews ? "page" : null)">
+                   class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isNews ? "border-[#97533F] font-semibold" : "border-transparent")"
+                   aria-current="@(isNews ? "page" : null)">
                     Nyheter
                 </a>
             }
@@ -62,7 +65,8 @@
             @if (tipPage != null)
             {
                 <a href="@tipPage.Url()"
-                   class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isTip ? "border-[#97533F] font-semibold" : "border-transparent")" aria-current="@(isTip ? "page" : null)">
+                   class="border-b-2 py-2 !text-black transition-colors hover:text-[#97533F] @(isTip ? "border-[#97533F] font-semibold" : "border-transparent")"
+                   aria-current="@(isTip ? "page" : null)">
                     Tipsa redaktionen
                 </a>
             }
@@ -84,5 +88,84 @@
 
         </div>
 
+        @* Hamburgermeny - visas endast på mobil *@
+        <button type="button"
+                id="mobile-menu-button"
+                class="flex items-center justify-center p-2 text-[#222320] md:hidden"
+                aria-label="Öppna menyn"
+                aria-controls="mobile-menu"
+                aria-expanded="false">
+
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="28"
+                 height="28"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+
+        </button>
+
     </nav>
+
+    @* Mobilnavigation - visas när menyn öppnas *@
+    <div id="mobile-menu"
+         class="mx-auto hidden w-full max-w-6xl flex-col gap-4 border-b border-[#D6D6CF] px-4 py-5 text-sm md:hidden">
+
+        <a href="@homeUrl"
+           class="!text-black @(isHome ? "font-semibold" : "")"
+           aria-current="@(isHome ? "page" : null)">
+            Hem
+        </a>
+
+        @if (newsPage != null)
+        {
+            <a href="@newsPage.Url()"
+               class="!text-black @(isNews ? "font-semibold" : "")"
+               aria-current="@(isNews ? "page" : null)">
+                Nyheter
+            </a>
+        }
+
+        @if (tipPage != null)
+        {
+            <a href="@tipPage.Url()"
+               class="!text-black @(isTip ? "font-semibold" : "")"
+               aria-current="@(isTip ? "page" : null)">
+                Tipsa redaktionen
+            </a>
+        }
+
+    </div>
+
 </header>
+
+@* Öppna och stäng mobilmenyn *@
+<script>
+    (() => {
+        const button = document.getElementById("mobile-menu-button");
+        const menu = document.getElementById("mobile-menu");
+
+        if (!button || !menu) return;
+
+        button.addEventListener("click", () => {
+            const isOpen =
+                button.getAttribute("aria-expanded") === "true";
+
+            button.setAttribute("aria-expanded", String(!isOpen));
+
+            button.setAttribute(
+                "aria-label",
+                isOpen ? "Öppna menyn" : "Stäng menyn"
+            );
+
+            menu.classList.toggle("hidden", isOpen);
+            menu.classList.toggle("flex", !isOpen);
+        });
+    })();
+</script>
