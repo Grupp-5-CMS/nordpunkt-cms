@@ -1,6 +1,7 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels
 @using Umbraco.Extensions
 @using System
+@using System.Linq
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<NewsOverviewPage>
 
 @{
@@ -16,12 +17,21 @@
     // Hämtar kategori-filter från query string
     var categoryFilter = Context.Request.Query["category"].ToString();
 
+    // Hämtar alla artiklar för att bygga kategorilista
+    var allArticles = newsFolder?.Children<NewsArticlePage>() ?? Enumerable.Empty<NewsArticlePage>();
+    var categories = allArticles
+        .Where(x => !string.IsNullOrWhiteSpace(x.ArticleCategory))
+        .Select(x => x.ArticleCategory.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(x => x)
+        .ToList();
+
     // Hämtar artiklar, filtrerar på kategori om angiven och sorterar med senaste först
-    var articles = newsFolder?.Children<NewsArticlePage>()
+    var articles = allArticles
         .Where(x => string.IsNullOrWhiteSpace(categoryFilter) ||
                     string.Equals(x.ArticleCategory, categoryFilter, StringComparison.OrdinalIgnoreCase))
         .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
-        ?? Enumerable.Empty<NewsArticlePage>();
+        .ToList();
 }
 
 <section class="container mx-auto px-4 py-12 max-w-6xl">
@@ -32,19 +42,37 @@
     </p>
 
     @* Sidans huvudrubrik *@
-    <h1 class="font-serif text-5xl text-[#222320] mb-10">
+    <h1 class="font-serif text-5xl text-[#222320] mb-6">
         @(string.IsNullOrWhiteSpace(categoryFilter) ? "Alla nyheter" : $"Nyheter: {categoryFilter}")
     </h1>
 
-    @if (!string.IsNullOrWhiteSpace(categoryFilter))
+    @* Kategorifilter *@
+    @* Vanligt GET-formulär: fungerar även utan JavaScript, onchange skickar direkt *@
+    <form method="get" action="@Model.Url()" class="category-filter mb-10">
+        <label for="categoryFilter" class="category-filter__label">Kategori</label>
+        <div class="category-filter__select-wrap">
+            <select id="categoryFilter" name="category"
+                    class="category-filter__select"
+                    onchange="if (this.value) { this.form.submit(); } else { window.location.href = this.form.action; }">
+                <option value="" selected="@string.IsNullOrWhiteSpace(categoryFilter)">Alla kategorier</option>
+                @foreach (var cat in categories)
+                {
+                    <option value="@cat" selected="@string.Equals(categoryFilter, cat, StringComparison.OrdinalIgnoreCase)">@cat</option>
+                }
+            </select>
+        </div>
+        <noscript><button type="submit" class="category-filter__submit">Filtrera</button></noscript>
+        @if (!string.IsNullOrWhiteSpace(categoryFilter))
+        {
+            <a href="@Model.Url()" class="category-filter__clear">Rensa filter ×</a>
+        }
+    </form>
+
+    @if (!articles.Any())
     {
-        <p class="text-sm text-[#74756E] mb-10">
-            <a href="@Model.Url()" class="underline ml-2 hover:text-[#97533F]">Visa alla nyheter</a>
+        <p class="border-t border-[#D6D6CF] py-8 text-sm text-[#74756E]">
+            Inga artiklar hittades i kategorin “@categoryFilter”.
         </p>
-    }
-    else
-    {
-        <div class="mb-10"></div>
     }
 
     @* Visar samtliga publicerade artiklar *@
