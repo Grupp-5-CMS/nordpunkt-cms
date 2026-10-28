@@ -17,6 +17,9 @@
     // Hämtar kategori-filter från query string
     var categoryFilter = Context.Request.Query["category"].ToString();
 
+    // Hämtar sortering från query string: "oldest" = äldst först, annars nyast först
+    var oldestFirst = string.Equals(Context.Request.Query["sort"].ToString(), "oldest", StringComparison.OrdinalIgnoreCase);
+
     // Hämtar alla artiklar för att bygga kategorilista
     var allArticles = newsFolder?.Children<NewsArticlePage>() ?? Enumerable.Empty<NewsArticlePage>();
     var categories = allArticles
@@ -26,11 +29,15 @@
         .OrderBy(x => x)
         .ToList();
 
-    // Hämtar artiklar, filtrerar på kategori om angiven och sorterar med senaste först
-    var articles = allArticles
+    // Hämtar artiklar och filtrerar på kategori om angiven
+    var filtered = allArticles
         .Where(x => string.IsNullOrWhiteSpace(categoryFilter) ||
-                    string.Equals(x.ArticleCategory, categoryFilter, StringComparison.OrdinalIgnoreCase))
-        .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
+                    string.Equals(x.ArticleCategory, categoryFilter, StringComparison.OrdinalIgnoreCase));
+
+    // Sorterar på publiceringsdatum (skapandedatum som reserv), nyast eller äldst först
+    var articles = (oldestFirst
+            ? filtered.OrderBy(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
+            : filtered.OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate)))
         .ToList();
 }
 
@@ -56,7 +63,7 @@
         <div class="relative">
             <select id="categoryFilter" name="category"
                     class="appearance-none min-w-[13rem] cursor-pointer border border-[#D6D6CF] bg-[#FAF9F6] py-2.5 pl-4 pr-10 text-sm font-semibold text-[#222320] transition-colors hover:border-[#74756E] focus:outline-none focus-visible:border-[#97533F] focus-visible:ring-2 focus-visible:ring-[#97533F]"
-                    onchange="if (this.value) { this.form.submit(); } else { window.location.href = this.form.action; }">
+                    onchange="this.form.submit()">
                 <option value="" selected="@string.IsNullOrWhiteSpace(categoryFilter)">Alla kategorier</option>
                 @foreach (var cat in categories)
                 {
@@ -80,6 +87,26 @@
                 Rensa filter ×
             </a>
         }
+
+        @* Sortering: skickas med i samma formulär som kategorin *@
+        <div class="ml-auto flex items-center gap-x-4">
+            <label for="sortOrder"
+                   class="text-xs font-medium uppercase tracking-[0.08em] [font-family:var(--font-heading)] text-[#74756E]">
+                Sortera
+            </label>
+            <div class="relative">
+                <select id="sortOrder" name="sort"
+                        class="appearance-none cursor-pointer border border-[#D6D6CF] bg-[#FAF9F6] py-2.5 pl-4 pr-10 text-sm font-semibold text-[#222320] transition-colors hover:border-[#74756E] focus:outline-none focus-visible:border-[#97533F] focus-visible:ring-2 focus-visible:ring-[#97533F]"
+                        onchange="this.form.submit()">
+                    <option value="" selected="@(!oldestFirst)">Nyast först</option>
+                    <option value="oldest" selected="@oldestFirst">Äldst först</option>
+                </select>
+                <svg class="pointer-events-none absolute right-3.5 top-1/2 h-3 w-3 -translate-y-1/2 text-[#97533F]"
+                     viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path d="M2 4.5 6 8.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
     </form>
 
     @if (!articles.Any())
