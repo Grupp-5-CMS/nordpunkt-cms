@@ -93,23 +93,27 @@
             <div class="flex-1">
 
                 @* Kategori och publiceringsdatum på samma rad *@
-                <div class="flex items-baseline gap-3 mb-2">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
 
                     @* Artikelns kategori, klickbar för att filtrera *@
                     @if (!string.IsNullOrWhiteSpace(article.ArticleCategory))
                     {
                         <a href="@Model.Url()?category=@Uri.EscapeDataString(article.ArticleCategory)"
-                           class="text-sm text-[#97533F] hover:underline">
+                           class="text-sm font-semibold text-[#97533F] no-underline hover:underline">
                             @article.ArticleCategory
                         </a>
                     }
 
-                    @* Artikelns publiceringsdatum *@
+                    @* Publiceringsdatum, med tunt streck före om kategori finns *@
                     @if (article.PublishDate.HasValue)
                     {
-                        <p class="text-xs text-[#74756E]">
+                        if (!string.IsNullOrWhiteSpace(article.ArticleCategory))
+                        {
+                            <span class="h-3 w-px bg-[#D6D6CF]" aria-hidden="true"></span>
+                        }
+                        <time datetime="@article.PublishDate.Value.ToString("yyyy-MM-dd")" class="text-xs text-[#74756E]">
                             @article.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
-                        </p>
+                        </time>
                     }
 
                 </div>

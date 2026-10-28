@@ -25,31 +25,35 @@
 
     <header class="mt-10 mb-8">
 
-        <div class="flex">
+        @* Kategori och datum: större text och mer luft än i listorna *@
+        <div class="flex flex-wrap items-center gap-5 mb-8">
 
-            @* Artikel kategori *@
+            @* Artikelns kategori, länkar till filtrerad nyhetssida *@
             @if (!string.IsNullOrWhiteSpace(Model.ArticleCategory))
             {
                 if (newsPage != null)
                 {
-                    <a href="@newsPage.Url()?category=@Uri.EscapeDataString(Model.ArticleCategory)" class="text-sm text-[#97533F] mb-2 hover:underline">
+                    <a href="@newsPage.Url()?category=@Uri.EscapeDataString(Model.ArticleCategory)"
+                       class="text-base font-medium uppercase tracking-[0.12em] [font-family:var(--font-heading)] text-[#97533F] no-underline hover:underline underline-offset-4">
                         @Model.ArticleCategory
                     </a>
                 }
                 else
                 {
-                    <p class="text-sm text-[#97533F] mb-2">
-                        @Model.ArticleCategory
-                    </p>
+                    <span class="text-base font-medium uppercase tracking-[0.12em] [font-family:var(--font-heading)] text-[#97533F]">@Model.ArticleCategory</span>
                 }
             }
 
-            @* Datum och rubrik *@
+            @* Publiceringsdatum, med tunt streck före om kategori finns *@
             @if (Model.PublishDate.HasValue)
             {
-                <p class="text-xs text-[#74756E] mb-3">
+                if (!string.IsNullOrWhiteSpace(Model.ArticleCategory))
+                {
+                    <span class="h-5 w-px bg-[#D6D6CF]" aria-hidden="true"></span>
+                }
+                <time datetime="@Model.PublishDate.Value.ToString("yyyy-MM-dd")" class="text-base text-[#74756E]">
                     @Model.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
-                </p>
+                </time>
             }
 
         </div>
