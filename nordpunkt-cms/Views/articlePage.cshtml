@@ -14,6 +14,14 @@
 
     // Länk till nyhetsöversikten, med startsidan som reserv
     var newsUrl = newsPage?.Url() ?? home?.Url() ?? "/";
+
+    // Hämtar upp till 3 andra artiklar i samma kategori, nyast först
+    var relatedArticles = Model.Parent()?.Children<NewsArticlePage>()
+        .Where(x => x.Id != Model.Id
+                    && string.Equals(x.ArticleCategory, Model.ArticleCategory, StringComparison.OrdinalIgnoreCase))
+        .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
+        .Take(3)
+        .ToList() ?? new List<NewsArticlePage>();
 }
 
 <article class="mx-auto max-w-6xl px-6 py-12">
@@ -107,3 +115,42 @@
     </div>
 
 </article>
+
+@* Relaterade artiklar, visas bara om det finns några *@
+@if (relatedArticles.Any())
+{
+    <section class="mx-auto max-w-6xl px-6 pb-16">
+
+        <h2 class="font-serif text-3xl text-[#222320] mb-8 border-t border-[#D6D6CF] pt-10">
+            Fler nyheter om @Model.ArticleCategory
+        </h2>
+
+        <div class="grid gap-8 md:grid-cols-3">
+            @foreach (var related in relatedArticles)
+            {
+                <a href="@related.Url()" class="group block no-underline">
+
+                    @if (related.ArticleImage != null)
+                    {
+                        <img src="@related.ArticleImage.Url()"
+                             alt="@related.ArticleImage.Name"
+                             class="mb-4 aspect-[3/2] w-full object-cover" />
+                    }
+
+                    @if (related.PublishDate.HasValue)
+                    {
+                        <p class="text-xs text-[#74756E] mb-2">
+                            @related.PublishDate.Value.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("sv-SE"))
+                        </p>
+                    }
+
+                    <h3 class="font-serif text-xl text-[#222320] group-hover:underline">
+                        @related.ArticleTitle
+                    </h3>
+
+                </a>
+            }
+        </div>
+
+    </section>
+}

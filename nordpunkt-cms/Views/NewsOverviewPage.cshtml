@@ -17,20 +17,33 @@
     // Hämtar kategori-filter från query string
     var categoryFilter = Context.Request.Query["category"].ToString();
 
+    // Hämtar sökordet från sökfältet
+    var searchQuery = Context.Request.Query["q"].ToString().Trim();
+
+    // Hämtar sortering från query string: "oldest" = äldst först, annars nyast först
+    var oldestFirst = string.Equals(Context.Request.Query["sort"].ToString(), "oldest", StringComparison.OrdinalIgnoreCase);
+
     // Hämtar alla artiklar för att bygga kategorilista
     var allArticles = newsFolder?.Children<NewsArticlePage>() ?? Enumerable.Empty<NewsArticlePage>();
     var categories = allArticles
         .Where(x => !string.IsNullOrWhiteSpace(x.ArticleCategory))
-        .Select(x => x.ArticleCategory.Trim())
+        .Select(x => x.ArticleCategory!.Trim())
         .Distinct(StringComparer.OrdinalIgnoreCase)
         .OrderBy(x => x)
         .ToList();
 
-    // Hämtar artiklar, filtrerar på kategori om angiven och sorterar med senaste först
-    var articles = allArticles
+    // Filtrerar artiklar efter kategori och sökord
+    var filtered = allArticles
         .Where(x => string.IsNullOrWhiteSpace(categoryFilter) ||
                     string.Equals(x.ArticleCategory, categoryFilter, StringComparison.OrdinalIgnoreCase))
-        .OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
+        .Where(x => string.IsNullOrWhiteSpace(searchQuery) ||
+                    (x.ArticleTitle?.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (x.Intro?.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    // Sorterar på publiceringsdatum (skapandedatum som reserv), nyast eller äldst först
+    var articles = (oldestFirst
+            ? filtered.OrderBy(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate))
+            : filtered.OrderByDescending(x => x.PublishDate ?? DateOnly.FromDateTime(x.CreateDate)))
         .ToList();
 }
 
@@ -49,6 +62,11 @@
     @* Kategorifilter *@
     @* Vanligt GET-formulär: fungerar även utan JavaScript, onchange skickar direkt *@
     <form method="get" action="@Model.Url()" class="flex flex-wrap items-center gap-x-4 gap-y-3 mb-10">
+        @* Behåll sökordet vid filtrering och sortering *@
+        @if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            <input type="hidden" name="q" value="@searchQuery" />
+        }
         <label for="categoryFilter"
                class="text-xs font-medium uppercase tracking-[0.08em] [font-family:var(--font-heading)] text-[#74756E]">
             Kategori
@@ -56,7 +74,7 @@
         <div class="relative">
             <select id="categoryFilter" name="category"
                     class="appearance-none min-w-[13rem] cursor-pointer border border-[#D6D6CF] bg-[#FAF9F6] py-2.5 pl-4 pr-10 text-sm font-semibold text-[#222320] transition-colors hover:border-[#74756E] focus:outline-none focus-visible:border-[#97533F] focus-visible:ring-2 focus-visible:ring-[#97533F]"
-                    onchange="if (this.value) { this.form.submit(); } else { window.location.href = this.form.action; }">
+                    onchange="this.form.submit()">
                 <option value="" selected="@string.IsNullOrWhiteSpace(categoryFilter)">Alla kategorier</option>
                 @foreach (var cat in categories)
                 {
@@ -75,29 +93,50 @@
         </noscript>
         @if (!string.IsNullOrWhiteSpace(categoryFilter))
         {
-            <a href="@Model.Url()"
+            <a href="@(string.IsNullOrWhiteSpace(searchQuery) ? Model.Url() : $"{Model.Url()}?q={Uri.EscapeDataString(searchQuery)}")"
                class="border-b border-current text-sm font-semibold text-[#97533F] no-underline hover:border-transparent">
                 Rensa filter ×
             </a>
         }
+
+        @* Sortering: skickas med i samma formulär som kategorin *@
+        <div class="ml-auto flex items-center gap-x-4">
+            <label for="sortOrder"
+                   class="text-xs font-medium uppercase tracking-[0.08em] [font-family:var(--font-heading)] text-[#74756E]">
+                Sortera
+            </label>
+            <div class="relative">
+                <select id="sortOrder" name="sort"
+                        class="appearance-none cursor-pointer border border-[#D6D6CF] bg-[#FAF9F6] py-2.5 pl-4 pr-10 text-sm font-semibold text-[#222320] transition-colors hover:border-[#74756E] focus:outline-none focus-visible:border-[#97533F] focus-visible:ring-2 focus-visible:ring-[#97533F]"
+                        onchange="this.form.submit()">
+                    <option value="" selected="@(!oldestFirst)">Nyast först</option>
+                    <option value="oldest" selected="@oldestFirst">Äldst först</option>
+                </select>
+                <svg class="pointer-events-none absolute right-3.5 top-1/2 h-3 w-3 -translate-y-1/2 text-[#97533F]"
+                     viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path d="M2 4.5 6 8.5l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
     </form>
 
+    @* Visa meddelande om inga artiklar hittas *@
     @if (!articles.Any())
     {
         <p class="border-t border-[#D6D6CF] py-8 text-sm text-[#74756E]">
-            Inga artiklar hittades i kategorin “@categoryFilter”.
+            @if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                <text>Inga artiklar hittades för "@searchQuery".</text>
+            }
+            else if (!string.IsNullOrWhiteSpace(categoryFilter))
+            {
+                <text>Inga artiklar hittades i kategorin "@categoryFilter".</text>
+            }
+            else
+            {
+                <text>Inga publicerade artiklar hittades.</text>
+            }
         </p>
-    }
-
-    @* Visar samtliga publicerade artiklar *@
-
-    @if (!articles.Any())
-    {
-        <div class="rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-yellow-800">
-            Inga publicerade artiklar hittades.
-
-            <p>NewsFolder hittades: @(newsFolder != null ? "Ja" : "Nej")</p>
-        </div>
     }
 
     @foreach (var article in articles)

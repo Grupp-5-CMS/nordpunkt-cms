@@ -24,6 +24,27 @@ h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
 }
 
+/* Rubriker */
+.prose h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.prose h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Stycken */
+.prose p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+}
+
 /* Länkar använder accentfärgen */
 a {
     color: var(--color-primary);
@@ -33,4 +54,27 @@ a {
 a:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 3px;
+}
+
+/* Återställ punktlistor från Umbraco */
+.prose ul {
+    list-style: disc !important;
+    padding-left: 2rem !important;
+    margin: 1rem 0 !important;
+}
+
+.prose ol {
+    list-style: decimal !important;
+    padding-left: 2rem !important;
+    margin: 1rem 0 !important;
+}
+
+.prose li {
+    display: list-item !important;
+    padding-left: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.prose li::marker {
+        color: #222320;
 }
