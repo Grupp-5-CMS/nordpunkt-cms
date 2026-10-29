@@ -1,0 +1,44 @@
+﻿@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+@{
+    Layout = "mainLayout.cshtml";
+
+    // Hämta rubrik och innehåll från Umbraco
+    var pageTitle = Model.Value<string>("pageTitle");
+    var pageContent = Model.Value("pageContent");
+
+    // Använd sidans namn om rubriken saknas
+    if (string.IsNullOrWhiteSpace(pageTitle))
+    {
+        pageTitle = Model.Name;
+    }
+}
+
+<main class="mx-auto w-full max-w-6xl px-4 py-10 md:px-8 md:py-20">
+
+    <div class="mx-auto w-full max-w-3xl min-w-0">
+
+        @* Sidans rubrik - responsiv *@
+        <h1 class="mb-6 break-words font-serif text-3xl leading-tight text-[#222320] sm:text-4xl md:mb-8 md:text-6xl">
+            @pageTitle
+        </h1>
+
+        @* Sidans innehåll - responsivt *@
+        <div class="prose prose-base max-w-none break-words text-[#222320]
+            md:prose-lg
+            [&_img]:h-auto
+            [&_img]:max-w-full
+            [&_iframe]:max-w-full
+            [&_table]:block
+            [&_table]:max-w-full
+            [&_table]:overflow-x-auto
+            [&_a]:break-words">
+
+            @pageContent
+
+        </div>
+
+    </div>
+
+</main>
