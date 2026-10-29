@@ -3,23 +3,62 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 
 @{
-    // hämtar startsidan och letar upp Site Settings
+    // Hämta startsidan
     var home = Model.Root();
-    var settings = home?.Children<SiteSettings>().FirstOrDefault();
+
+    // Hämta Site Settings
+    var settings = home?.Children<SiteSettings>()
+        .FirstOrDefault();
+
+    // Hämta publicerade standardsidor
+    var standardPages = home?.Children()
+        .Where(x => x.ContentType.Alias == "standardPage"
+                    && x.IsVisible())
+        .ToList();
 }
 
-<footer>
-    @if (settings != null)
-    {
-        @* visar kontaktmailen från Site Settings *@
-        <p>
-            Kontakta oss:
-            <a href="mailto:@settings.ContactEmail">
-                @settings.ContactEmail
-            </a>
-        </p>
+<footer class="bg-white">
+    <div class="mx-auto w-full max-w-6xl px-4 md:px-8">
 
-        @* visar sidfotstexten från Site Settings *@
-        <p>@settings.FooterText</p>
-    }
+        <div class="flex flex-col gap-6 border-t border-[#D6D6CF] py-8 md:flex-row md:items-start md:justify-between">
+
+            @* Kontaktinformation *@
+            @if (settings != null)
+            {
+                <div class="flex flex-col gap-2">
+
+                    <p class="text-sm text-[#222320]">
+                        Kontakt:
+                        <a href="mailto:@(settings.ContactEmail)"
+                           class="!text-[#222320] hover:!text-[#97533F]">
+                            @(settings.ContactEmail)
+                        </a>
+                    </p>
+
+                    <p class="text-xs text-[#74756E]">
+                        @(settings.FooterText)
+                    </p>
+
+                </div>
+            }
+
+            @* Länkar till standardsidor *@
+            @if (standardPages != null && standardPages.Any())
+            {
+                <nav class="flex flex-wrap items-center gap-6"
+                     aria-label="Sidfotsnavigation">
+
+                    @foreach (var standardPage in standardPages)
+                    {
+                        <a href="@(standardPage.Url())"
+                           class="text-sm !text-[#222320] transition-colors hover:!text-[#97533F]">
+                            @(standardPage.Name)
+                        </a>
+                    }
+
+                </nav>
+            }
+
+        </div>
+    </div>
 </footer>
