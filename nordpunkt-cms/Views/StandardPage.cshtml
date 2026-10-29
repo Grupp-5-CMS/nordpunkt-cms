@@ -15,20 +15,30 @@
     }
 }
 
-<div class="mx-auto w-full max-w-6xl px-4 py-12 md:py-20">
+<main class="mx-auto w-full max-w-6xl px-4 py-10 md:px-8 md:py-20">
 
-    <div class="mx-auto max-w-3xl">
+    <div class="mx-auto w-full max-w-3xl min-w-0">
 
-        @* Sidans rubrik *@
-        <h1 class="mb-8 font-serif text-4xl text-[#222320] md:text-6xl">
+        @* Sidans rubrik - responsiv *@
+        <h1 class="mb-6 break-words font-serif text-3xl leading-tight text-[#222320] sm:text-4xl md:mb-8 md:text-6xl">
             @pageTitle
         </h1>
 
-        @* Sidans innehåll *@
-        <div class="prose prose-lg max-w-none text-[#222320]">
+        @* Sidans innehåll - responsivt *@
+        <div class="prose prose-base max-w-none break-words text-[#222320]
+            md:prose-lg
+            [&_img]:h-auto
+            [&_img]:max-w-full
+            [&_iframe]:max-w-full
+            [&_table]:block
+            [&_table]:max-w-full
+            [&_table]:overflow-x-auto
+            [&_a]:break-words">
+
             @pageContent
+
         </div>
 
     </div>
 
-</div>
+</main>
