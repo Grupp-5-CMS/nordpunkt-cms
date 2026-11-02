@@ -1,0 +1,122 @@
+﻿@using nordpunkt_cms.ViewModels
+@using Umbraco.Cms.Web.Common
+@model NewsTipFormViewModel
+
+@using (Html.BeginUmbracoForm("Submit", "NewsTipForm", FormMethod.Post))
+{
+    <div class="mx-auto my-8 w-full max-w-2xl bg-[#FAF9F6] px-4 py-6 font-sans text-[#222320] sm:px-8 sm:py-10 md:px-10">
+
+        <div class="mb-8 border-b border-[#D6D6CF] pb-6">
+            <p class="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-[#97533F]">
+                Tipsa redaktionen
+            </p>
+
+            <h2 class="mb-3 font-sans text-2xl font-semibold leading-tight text-[#222320] sm:text-3xl">
+                Har du ett nyhetstips?
+            </h2>
+
+            <p class="text-sm leading-relaxed text-[#74756E] sm:text-base">
+                Hjälp oss att berätta om det som händer. Fyll i formuläret nedan så tar vi en titt på ditt tips.
+            </p>
+        </div>
+
+        <div class="flex flex-col gap-6 sm:gap-8">
+
+            <div class="flex min-w-0 flex-col gap-2">
+                <label asp-for="TipHeadline" class="text-sm font-bold text-[#222320]">
+                    Rubrik på nyhetstipset <span class="text-[#97533F]">*</span>
+                </label>
+
+                <input asp-for="TipHeadline"
+                       placeholder="Vad handlar nyheten om?"
+                       class="w-full min-w-0 rounded-none border border-[#D6D6CF] bg-white px-3 py-3 text-base text-[#222320] placeholder:text-[#74756E] focus:border-[#97533F] focus:outline-none focus:ring-2 focus:ring-[#97533F]/20 sm:px-4" />
+
+                <span asp-validation-for="TipHeadline" class="text-xs text-[#97533F]"></span>
+            </div>
+
+            <div class="flex min-w-0 flex-col gap-2">
+                <label asp-for="TipBody" class="text-sm font-bold text-[#222320]">
+                    Beskrivning <span class="text-[#97533F]">*</span>
+                </label>
+
+                <textarea asp-for="TipBody"
+                          rows="5"
+                          placeholder="Berätta vad som har hänt, var och när..."
+                          class="w-full min-w-0 resize-y rounded-none border border-[#D6D6CF] bg-white px-3 py-3 text-base leading-relaxed text-[#222320] placeholder:text-[#74756E] focus:border-[#97533F] focus:outline-none focus:ring-2 focus:ring-[#97533F]/20 sm:px-4"></textarea>
+
+                <span asp-validation-for="TipBody" class="text-xs text-[#97533F]"></span>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-4 md:gap-6">
+
+                <div class="flex min-w-0 flex-col gap-2">
+                    <label asp-for="SenderName" class="text-sm font-bold text-[#222320]">
+                        Namn <span class="font-normal text-[#74756E]">(frivilligt)</span>
+                    </label>
+
+                    <input asp-for="SenderName"
+                           placeholder="För- och efternamn"
+                           class="w-full min-w-0 rounded-none border border-[#D6D6CF] bg-white px-3 py-3 text-base text-[#222320] placeholder:text-[#74756E] focus:border-[#97533F] focus:outline-none focus:ring-2 focus:ring-[#97533F]/20 sm:px-4" />
+
+                    <span asp-validation-for="SenderName" class="text-xs text-[#97533F]"></span>
+                </div>
+
+                <div class="flex min-w-0 flex-col gap-2">
+                    <label asp-for="SenderEmail" class="text-sm font-bold text-[#222320]">
+                        E-post <span class="font-normal text-[#74756E]">(frivilligt)</span>
+                    </label>
+
+                    <input asp-for="SenderEmail"
+                           type="email"
+                           placeholder="namn@exempel.se"
+                           class="w-full min-w-0 rounded-none border border-[#D6D6CF] bg-white px-3 py-3 text-base text-[#222320] placeholder:text-[#74756E] focus:border-[#97533F] focus:outline-none focus:ring-2 focus:ring-[#97533F]/20 sm:px-4" />
+
+                    <span asp-validation-for="SenderEmail" class="text-xs text-[#97533F]"></span>
+                </div>
+
+            </div>
+
+            <div class="flex min-w-0 flex-col gap-2">
+                <label asp-for="SenderPhone" class="text-sm font-bold text-[#222320]">
+                    Telefonnummer <span class="font-normal text-[#74756E]">(frivilligt)</span>
+                </label>
+
+                <input asp-for="SenderPhone"
+                       type="tel"
+                       placeholder="Ditt telefonnummer"
+                       class="w-full min-w-0 rounded-none border border-[#D6D6CF] bg-white px-3 py-3 text-base text-[#222320] placeholder:text-[#74756E] focus:border-[#97533F] focus:outline-none focus:ring-2 focus:ring-[#97533F]/20 sm:px-4" />
+
+                <span asp-validation-for="SenderPhone" class="text-xs text-[#97533F]"></span>
+            </div>
+
+            <div class="flex items-start gap-3 border-t border-[#D6D6CF] pt-6">
+                <input asp-for="PrivacyConsent"
+                       type="checkbox"
+                       class="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-[#97533F] focus:outline-none focus:ring-2 focus:ring-[#97533F]/30" />
+
+                <div class="flex min-w-0 flex-col gap-1">
+                    <label asp-for="PrivacyConsent" class="cursor-pointer text-sm leading-relaxed text-[#74756E]">
+                        Jag godkänner informationen om hur personuppgifter behandlas
+                        <span class="text-[#97533F]">*</span>
+                    </label>
+
+                    <span asp-validation-for="PrivacyConsent" class="text-xs text-[#97533F]"></span>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-start gap-3">
+                <button type="submit"
+                        class="flex w-full items-center justify-center gap-5 border border-[#222320] bg-[#222320] px-6 py-4 font-sans text-sm font-bold text-[#FAF9F6] transition-colors duration-200 hover:border-[#97533F] hover:bg-[#97533F] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#97533F] sm:w-auto">
+                    Skicka nyhetstips
+                    <span aria-hidden="true">→</span>
+                </button>
+
+                <p class="text-xs text-[#74756E]">
+                    <span class="text-[#97533F]">*</span> Obligatoriska fält
+                </p>
+            </div>
+
+        </div>
+    </div>
+}
+```

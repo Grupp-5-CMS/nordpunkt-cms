@@ -1,5 +1,11 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using Umbraco.Cms.Web.Common.PublishedModels
+@using nordpunkt_cms.ViewModels
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
 @{
-	Layout = "mainLayout.cshtml";
+    Layout = "mainLayout.cshtml";
 }
+
+@await Html.PartialAsync(
+    "Forms/_NewsTipForm",
+    new NewsTipFormViewModel())
