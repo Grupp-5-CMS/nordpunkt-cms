@@ -1,5 +1,6 @@
 ﻿{
   "$schema": "appsettings-schema.json",
+  "FormSubmissionsNodeKey": "1a4b7d8f-61e6-4f18-b05a-6b855860c440",
   "Serilog": {
     "MinimumLevel": {
       "Default": "Information",
@@ -33,6 +34,9 @@
       },
       "Security": {
         "AllowConcurrentLogins": false
+      },
+      "Imaging": {
+        "HMACSecretKey": "jfeO4Q9UCS2f7cxgk1BlwvOly73yCk\u002BRMELxL7\u002B6KEwbBD\u002B6e6ec/hjLErmzJU86t9POi8Z8bV/n8VDuqoOJ5Q=="
       }
     }
   }
