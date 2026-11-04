@@ -89,6 +89,9 @@ namespace nordpunkt_cms.Controllers
             content.SetValue(
                 "privacyConsent", model.PrivacyConsent);
 
+            // Alla nya nyhetstips får automatiskt statusen Nytt
+            content.SetValue("status", "Nytt");
+
             var result = _contentService.Save(content);
 
             if (result.Success)
