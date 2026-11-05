@@ -35,7 +35,8 @@
   },
   "uSync": {
     "Settings": {
-      "ExportAtStartup": "all",
+      "ImportAtStartup": "All",
+      "ExportAtStartup": "None",
       "ExportOnSave": "All"
     }
   }
